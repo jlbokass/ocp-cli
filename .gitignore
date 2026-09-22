@@ -1,0 +1,33 @@
+# Python bytecode and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Test, lint, and coverage output
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+
+# Python packaging output
+/build/
+/dist/
+*.egg-info/
+.eggs/
+
+# Local configuration (keep example files versionable)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Editor and operating system files
+.idea/
+.vscode/
+.DS_Store

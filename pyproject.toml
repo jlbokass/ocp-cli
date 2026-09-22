@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ocp-cli"
+version = "1.7.2"
+description = "CLI simple pour initialiser et organiser les projets OpenClassrooms DevOps"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "typer>=0.12,<1.0",
+  "PyYAML>=6.0,<7.0",
+  "rich>=13.7,<15.0",
+  "pypdf>=5.0,<7.0",
+]
+
+[project.scripts]
+ocp = "ocp.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ocp"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"

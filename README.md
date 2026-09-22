@@ -285,3 +285,57 @@ tests/                 # Tests pytest
 ```
 
 Le `.gitignore` de la CLI exclut les environnements virtuels, caches Python, artefacts de build et fichiers `.env` locaux. Les fichiers `.env.example` restent versionnables.
+
+## Journal IA
+
+Les six commandes de génération documentaire (`audit`, `project-audit`, `cadrage`,
+`workflow`, `backlog`, `sprint`) ajoutent une entrée après l’écriture du résultat.
+Une génération échouée n’est pas présentée comme une contribution réussie.
+Les revues humaines et les vérifications restent **À renseigner**.
+Le journal existant est conservé ; aucune migration n’est nécessaire.
+
+```bash
+ocp journal add --task "Revue du contrat API" --tool "ChatGPT" \
+  --request "Examiner les autorisations" \
+  --contribution "Proposition de contrôles du propriétaire" \
+  --decision "À renseigner" --verification "À renseigner"
+ocp journal list
+```
+
+Compléter les revues et références directement dans `journal/ai-journal.md`.
+Les activités hors OCP et les commits assistés s’enregistrent manuellement dans
+cette version. Les identifiants d’entrée et les horodatages UTC sont automatiques.
+
+## Documentation française et anglaise
+
+Le français reste la référence ; les chemins utilisés par les commandes existantes
+ne changent pas. Les chemins passés ci-dessous sont relatifs au workspace, même
+si la commande est lancée depuis `repos/backend`.
+
+```bash
+ocp docs translate docs/cadrage.md
+# Relire docs/cadrage.en.md et corriger les éventuelles erreurs.
+ocp docs review docs/cadrage.md
+ocp docs status
+# Après évolution du français, examiner le diff puis :
+ocp docs translate docs/cadrage.md --overwrite
+```
+
+La traduction utilise le Codex CLI déjà installé et authentifié. Elle produit un
+brouillon `.en.md` sans toucher au français, sans commit et sans publication.
+Un lien vers le français est ajouté au brouillon. Le lien inverse peut être ajouté
+manuellement dans le français avant traduction afin de ne pas modifier sa source
+après enregistrement de l’empreinte.
+
+`journal/translations.json` conserve les empreintes SHA-256 de la source et de la
+traduction ainsi que la revue explicitement confirmée. Versionner ce registre.
+`status` affiche les traductions enregistrées : synchronisées, obsolètes, modifiées
+ou manquantes. Il ne mesure pas la qualité linguistique et ne découvre pas les
+Markdown qui n’ont jamais été traduits. Une retraduction annule la revue précédente.
+Les liens internes conservent leur cible originale ; ils ne sont pas réécrits vers
+les traductions. Traduire le journal en dernier : toute nouvelle entrée le rend
+obsolète. Sa propre traduction n’ajoute pas d’entrée dans le journal pour éviter
+une invalidation immédiate ; elle est suivie dans le registre des traductions.
+
+La publication sélective via MkDocs/GitHub Pages reste un lot distinct. Ces
+commandes ne publient aucun document et n’activent aucun site.

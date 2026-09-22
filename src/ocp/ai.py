@@ -333,6 +333,8 @@ def run_codex_audit(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path.write_text(report.rstrip() + "\n", encoding="utf-8")
+    from .journal import record_generation
+    record_generation(workspace, output_path)
     return output_path
 
 
@@ -373,6 +375,8 @@ def run_codex_project_audit(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(report.rstrip() + "\n", encoding="utf-8")
+    from .journal import record_generation
+    record_generation(workspace, output_path)
     return output_path
 
 def extract_pdf_sources(source_dir: Path) -> list[dict[str, str]]:
@@ -572,6 +576,8 @@ def run_codex_cadrage(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(report.rstrip() + "\n", encoding="utf-8")
+    from .journal import record_generation
+    record_generation(workspace, output_path)
     return output_path
 
 
@@ -750,6 +756,8 @@ def run_codex_workflow(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(report.rstrip() + "\n", encoding="utf-8")
+    from .journal import record_generation
+    record_generation(workspace, output_path)
     return output_path
 
 
@@ -978,6 +986,8 @@ def run_codex_backlog(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(report.rstrip() + "\n", encoding="utf-8")
+    from .journal import record_generation
+    record_generation(workspace, output_path)
     return output_path
 
 def build_sprint_prompt(
@@ -1220,6 +1230,8 @@ def run_codex_sprint(workspace: Path) -> Path:
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(report.rstrip() + "\n", encoding="utf-8")
+    from .journal import record_generation
+    record_generation(workspace, output_path)
     return output_path
 
 

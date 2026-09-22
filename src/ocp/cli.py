@@ -816,5 +816,86 @@ def ai_commit(
     console.print("[dim]Aucun push n'a été effectué.[/dim]")
 
 
+journal_app = typer.Typer(help="Journal IA du workspace.", no_args_is_help=True)
+app.add_typer(journal_app, name="journal")
+docs_app = typer.Typer(help="Traductions documentaires.", no_args_is_help=True)
+app.add_typer(docs_app, name="docs")
+
+
+@journal_app.command("add")
+def journal_add(
+    task: str = typer.Option(..., prompt="Tâche"),
+    tool: str = typer.Option("Codex CLI"),
+    request: str = typer.Option("À renseigner"),
+    contribution: str = typer.Option("À renseigner"),
+    decision: str = typer.Option("À renseigner"),
+    verification: str = typer.Option("À renseigner"),
+    references: str = typer.Option("À renseigner"),
+) -> None:
+    """Ajoute une entrée sans modifier les entrées précédentes."""
+    from .journal import add_entry
+    try:
+        workspace = find_workspace(Path.cwd())
+        entry_id = add_entry(workspace, task=task, tool=tool, request=request,
+                             contribution=contribution, decision=decision,
+                             verification=verification, references=references)
+        console.print(entry_id, markup=False)
+    except (WorkspaceNotFoundError, OSError, ValueError) as exc:
+        console.print(str(exc), markup=False)
+        raise typer.Exit(1)
+
+
+@journal_app.command("list")
+def journal_list() -> None:
+    """Affiche le journal, y compris les revues encore à renseigner."""
+    try:
+        path = find_workspace(Path.cwd()) / "journal" / "ai-journal.md"
+        console.print(path.read_text(encoding="utf-8") if path.exists() else "Journal vide.", markup=False)
+    except (WorkspaceNotFoundError, OSError) as exc:
+        console.print(str(exc), markup=False)
+        raise typer.Exit(1)
+
+
+@docs_app.command("translate")
+def docs_translate(source: str, overwrite: bool = typer.Option(False, "--overwrite")) -> None:
+    """Prépare un brouillon .en.md à relire ; source relative au workspace."""
+    from .documentation import translate
+    try:
+        target = translate(find_workspace(Path.cwd()), source, overwrite=overwrite)
+        console.print(f"Brouillon anglais à relire : {target}", markup=False)
+    except (WorkspaceNotFoundError, AiAuditError, OSError, ValueError) as exc:
+        console.print(str(exc), markup=False)
+        raise typer.Exit(1)
+
+
+@docs_app.command("status")
+def docs_status() -> None:
+    """Compare les empreintes des sources et traductions enregistrées."""
+    from .documentation import translation_status
+    try:
+        rows = translation_status(find_workspace(Path.cwd()))
+        for name, state in rows:
+            console.print(f"{name}: {state}", markup=False)
+        if not rows:
+            console.print("Aucune traduction enregistrée.")
+    except (WorkspaceNotFoundError, OSError, ValueError) as exc:
+        console.print(str(exc), markup=False)
+        raise typer.Exit(1)
+
+
+@docs_app.command("review")
+def docs_review(source: str) -> None:
+    """Confirme que tu as relu la traduction actuelle."""
+    from .documentation import mark_reviewed
+    if not typer.confirm("As-tu relu et validé cette traduction ?", default=False):
+        raise typer.Exit()
+    try:
+        mark_reviewed(find_workspace(Path.cwd()), source)
+        console.print("Revue enregistrée.")
+    except (WorkspaceNotFoundError, OSError, ValueError) as exc:
+        console.print(str(exc), markup=False)
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()

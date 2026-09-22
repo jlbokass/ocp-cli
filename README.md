@@ -4,6 +4,11 @@ CLI personnel pour organiser les projets OpenClassrooms DevOps sans multiplier l
 
 OCP centralise la documentation, les audits, le backlog et les sprints dans un workspace Git. Les repositories applicatifs restent indépendants dans `repos/`.
 
+## Guide pas à pas
+
+- [Ordre des commandes, journal IA et traductions](docs/command-workflow.md)
+- [Command order, AI journal and translations (English)](docs/command-workflow.en.md)
+
 ## Prérequis
 
 - Python 3.12 ou supérieur.

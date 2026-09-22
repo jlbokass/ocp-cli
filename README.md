@@ -2,6 +2,68 @@
 
 CLI personnel pour organiser les projets OpenClassrooms DevOps sans multiplier les outils.
 
+OCP centralise la documentation, les audits, le backlog et les sprints dans un workspace Git. Les repositories applicatifs restent indépendants dans `repos/`.
+
+## Prérequis
+
+- Python 3.12 ou supérieur.
+- Git avec une identité de commit configurée (`user.name` et `user.email`).
+- GitHub CLI (`gh`), authentifié pour créer les repositories, importer les Issues et gérer les Pull Requests.
+- Codex CLI installé et authentifié pour les commandes `ocp ai …`.
+- `pipx` pour l'installation isolée ci-dessous.
+
+## Installation
+
+Depuis un compte ayant accès au repository :
+
+```bash
+git clone https://github.com/jlbokass/ocp-cli.git
+cd ocp-cli
+pipx install .
+ocp --help
+```
+
+Pour mettre à jour une installation existante depuis ce clone :
+
+```bash
+git pull --ff-only
+pipx install --force .
+```
+
+## Démarrage rapide
+
+Vérifie l'authentification GitHub avant de créer un workspace :
+
+```bash
+gh auth status
+# Si nécessaire : gh auth login
+```
+
+Depuis le dossier où tu souhaites ranger tes projets :
+
+```bash
+ocp init
+# Saisir « Mon projet » à l'invite crée le dossier mon-projet/.
+cd mon-projet
+ocp repo add
+ocp status
+```
+
+`ocp repo add` demande le nom et l'URL du repository à cloner. Répète la commande pour chaque repository applicatif. `ocp init` tente de créer un repository GitHub privé et de pousser le premier commit ; si cette étape échoue, le workspace local reste disponible.
+
+Dépose ensuite les PDF officiels dans `docs/source/`, puis génère et relis les documents dans cet ordre :
+
+```bash
+ocp ai audit          # À répéter pour chaque repository enregistré
+ocp ai project-audit
+ocp ai cadrage
+ocp ai workflow
+ocp ai backlog
+ocp ai sprint
+```
+
+L'aide de chaque commande est accessible avec `--help`, par exemple `ocp ai audit --help`.
+
 ## Commandes principales
 
 ```bash
@@ -201,10 +263,25 @@ main synchronisée
 
 ## Développement de la CLI
 
+Depuis le clone du repository :
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
-pip install pytest
-pytest
+python -m pip install -e . pytest
+python -m pytest
 ```
+
+Organisation du code :
+
+```text
+src/ocp/
+├── cli.py             # Commandes et interactions terminal
+├── project.py         # Workspaces, repositories et opérations Git/GitHub
+├── ai.py              # Prompts, génération documentaire et plans de commits
+├── backlog_github.py  # Lecture du backlog et import des Issues
+└── templates.py       # Fichiers initiaux des workspaces
+tests/                 # Tests pytest
+```
+
+Le `.gitignore` de la CLI exclut les environnements virtuels, caches Python, artefacts de build et fichiers `.env` locaux. Les fichiers `.env.example` restent versionnables.
